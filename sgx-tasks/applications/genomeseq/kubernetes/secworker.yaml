@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-secure-worker
+  labels:
+    app: tasker-secure-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-secure-worker
+  template:
+    metadata:
+      labels:
+        app: tasker-secure-worker
+    spec:
+      volumes:
+        - name: aesmsocket
+          hostPath:
+            path: /var/run/aesmd/aesm.socket
+            type: Socket
+        - name: nfs-volume
+          nfs:
+            # URL for the NFS server
+            server: 10.99.73.22
+            path: /
+        - name: gfs-volume
+          hostPath:
+            path: /mnt
+      containers:
+        - name: tasker
+          image: cwidanage/tasker:0.49
+          command: ["/bin/sh", "-c"]
+          args:
+            [
+              "cd /sgx-tasks/ && git pull && cd /sgx-tasks/applications/genomeseq/dida-sgx/ && git pull origin tasker-integration && cd /sgx-tasks/build/ && make && cd /sgx-tasks/build/applications/genomeseq/dida-sgx/sample/DIDA/ && ./didasgx tcp://tasker-server-worker:5050",
+            ]
+          env:
+            - name: ENV_ROOT_PATH
+              value: "/data/"
+          volumeMounts:
+            - name: gfs-volume
+              mountPath: /data
+            - mountPath: /var/run/aesmd/aesm.socket
+              name: aesmsocket
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          resources:
+            limits:
+              cpu: 1
+              memory: 6G
