@@ -1,0 +1,13 @@
+enclave {
+    trusted {
+        public void ecall_process_dh(int connd);
+        public void ecall_process_msg0([in, size=msg0_len] char *msg0_buf, size_t msg0_len, [out, size=msg1_len] char *msg1_buf, size_t msg1_len);
+        public void ecall_verify_msg2([in, size=msg2_len] char *msg2_buf, size_t msg2_len, [out, size=msg3_len] char *msg3_buf, size_t msg3_len);
+    };
+
+    untrusted {
+        void ocall_print_string([in, string]const char *str);
+        int ocall_send(int sockfd, [in, size=len] const void *buf, size_t len, int flags);
+        int ocall_recv(int sockfd, [out, size=len] void *buf, size_t len, int flags);
+    };
+};

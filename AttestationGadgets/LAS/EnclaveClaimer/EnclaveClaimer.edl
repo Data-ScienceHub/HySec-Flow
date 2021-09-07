@@ -1,0 +1,9 @@
+enclave {
+    trusted {
+        public void ecall_printf_string([in, string] char *s);
+    };
+
+    untrusted {
+        void ocall_print_string([in, string]const char *str);
+    };
+};
