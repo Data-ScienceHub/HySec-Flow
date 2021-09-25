@@ -1,4 +1,4 @@
-# Scalable and Secure Framework for Heterogenous Computing
+# Scalable and Secure Framework for Heterogeneous Computing
 
 ## Architecture & Documentation
 
