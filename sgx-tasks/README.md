@@ -1,4 +1,4 @@
-# Scalable and Secure Platform for Heterogenous Computing
+# Scalable and Secure Framework for Heterogenous Computing
 
 ## Architecture & Documentation
 
