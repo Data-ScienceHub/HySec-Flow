@@ -1,4 +1,4 @@
-# Scalable and Secure Platform for Genomic Computing
+# Scalable and Secure Platform for Heterogenous Computing
 
 ## Architecture & Documentation
 
