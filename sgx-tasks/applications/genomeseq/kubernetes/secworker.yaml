@@ -15,10 +15,6 @@ spec:
         app: tasker-secure-worker
     spec:
       volumes:
-        - name: aesmsocket
-          hostPath:
-            path: /var/run/aesmd/aesm.socket
-            type: Socket
         - name: nfs-volume
           nfs:
             # URL for the NFS server
@@ -41,15 +37,13 @@ spec:
           volumeMounts:
             - name: gfs-volume
               mountPath: /data
-            - mountPath: /var/run/aesmd/aesm.socket
-              name: aesmsocket
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
           resources:
             limits:
               cpu: 0.2
-              memory: 1G
+              memory: 4G
             requests:
               cpu: 0.1
-              memory: 256M
+              memory: 1G
