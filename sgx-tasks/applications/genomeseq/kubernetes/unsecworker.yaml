@@ -15,14 +15,10 @@ spec:
         app: tasker-unsecure-worker
     spec:
       volumes:
-        - name: nfs-volume
-          nfs:
-            # URL for the NFS server
-            server: 10.99.73.22
-            path: /
-        - name: gfs-volume
+        - name: local
           hostPath:
-            path: /mnt
+            path: /shared
+            type: DirectoryOrCreate
       containers:
         - name: tasker
           image: cwidanage/tasker:0.44
@@ -32,13 +28,13 @@ spec:
             - name: ENV_ROOT_PATH
               value: "/data/"
           volumeMounts:
-            - name: gfs-volume
+            - name: local
               mountPath: /data
           imagePullPolicy: IfNotPresent
           resources:
             limits:
-              cpu: 0.4
-              memory: 4G
+              cpu: 1
+              memory: 5G
             requests:
-              cpu: 0.2
-              memory: 2G
+              cpu: 0.5
+              memory: 3G

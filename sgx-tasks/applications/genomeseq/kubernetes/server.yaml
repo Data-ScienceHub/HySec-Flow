@@ -15,14 +15,14 @@ spec:
         app: tasker-server
     spec:
       volumes:
-        - name: nfs-volume
-          nfs:
-            # URL for the NFS server
-            server: 10.99.73.22
-            path: /
-        - name: gfs-volume
-          hostPath:
-            path: /mnt
+        # - name: nfs-volume
+        #   nfs:
+        #     # URL for the NFS server
+        #     server: 10.99.73.22
+        #     path: /
+        # - name: gfs-volume
+        #   hostPath:
+        #     path: /mnt
         - name: local
           hostPath:
             path: /shared
@@ -40,16 +40,16 @@ spec:
               # this is the default path client checks for indexing genome data. So that data needs to be here.
               value: "/data/"
           volumeMounts:
-            - name: nfs-volume
-              mountPath: /data
+            # - name: nfs-volume
+            #   mountPath: /data
             - name: local
               mountPath: /data
           imagePullPolicy: IfNotPresent
           resources:
             limits:
-              cpu: 0.2
-              memory: 3G
+              cpu: 1
+              memory: 5G
             requests:
-              cpu: 0.1
-              memory: 256M
+              cpu: 0.5
+              memory: 3G
 ---
