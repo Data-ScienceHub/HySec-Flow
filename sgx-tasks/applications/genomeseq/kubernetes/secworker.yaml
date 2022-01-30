@@ -15,17 +15,21 @@ spec:
         app: tasker-secure-worker
     spec:
       volumes:
-        # - name: nfs-volume
-        #   nfs:
-        #     # URL for the NFS server
-        #     server: 10.99.73.22
-        #     path: /
-        # - name: gfs-volume
-        #   hostPath:
-        #     path: /mnt
+        - name: aesmsocket
+          hostPath:
+            path: /var/run/aesmd/aesm.socket
+            type: Socket
+        - name: nfs-volume
+          nfs:
+            # URL for the NFS server
+            server: 10.99.73.22
+            path: /
+        - name: gfs-volume
+          hostPath:
+            path: /mnt
         - name: local
           hostPath:
-            path: /shared
+            path: /data
             type: DirectoryOrCreate
       containers:
         - name: tasker
@@ -39,8 +43,10 @@ spec:
             - name: ENV_ROOT_PATH
               value: "/data/"
           volumeMounts:
-            # - name: gfs-volume
-            #   mountPath: /data
+            - name: gfs-volume
+              mountPath: /gfs
+            - name: aesmsocket
+              mountPath: /var/run/aesmd/aesm.socket
             - name: local
               mountPath: /data
           imagePullPolicy: IfNotPresent
@@ -49,7 +55,7 @@ spec:
           resources:
             limits:
               cpu: 1
-              memory: 5G
-            requests:
-              cpu: 0.5
-              memory: 3G
+              memory: 6G
+            # requests:
+            #   cpu: 0.5
+            #   memory: 3G
