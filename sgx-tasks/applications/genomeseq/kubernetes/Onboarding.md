@@ -145,6 +145,9 @@ sudo /sbin/modprobe isgx
 
 If you get an error, the Intel SGX driver was not correctly installed.
 
+Or you may use rust to automatically detect sgx in the hardware. 
+https://github.com/fortanix/rust-sgx/issues/374
+
 ## 2. Install the Intel SGX driver
 
 Download the desired SGX driver from the latest Intel SGX Linux Driver Repository (As an example, driver_2.6.0_b0a445.bin is the regular SGX driver; driver_1.36.bin is the DCAP driver).
@@ -894,11 +897,12 @@ https://www.techrunnr.com/how-to-reset-kubernetes-cluster/
 # After deploying server service and pods
 Now attempt to deploy sec-server faced error ` CrashLoopBackOff` (found using kubectl describe pod pod-name). The exact cause logs in given by command `kubectl logs --follow pod-name`. The sgx-tasks build fails with log 
 
+```bash
 [build_image /root/linux-sgx/psw/urts/loader.cpp:574] init_enclave failed
 [build_secs /root/linux-sgx/psw/urts/loader.cpp:516] Enclave start addr. = 0x7f3880000000, Size = 0x80000000, 2097152 KB
 Info: Please make sure SGX module is enabled in the BIOS, and install SGX driver afterwards.
 Error: Invalid SGX device.
-
+```
 
 Now to check the error location visit the docker file at `Hysecflow/sgx-tasts/applications/genomeseq/Dockerfile`. Trying to run the same commands in my remote server.
 sudo yum install libfmt-dev libzmq3-dev libspdlog-dev cmake make git build-essential nano iputils-ping net-tools valgrind
@@ -937,8 +941,13 @@ In terminal opened in vs code editor execute
 kubectl apply -f .\applications\genomeseq\kubernetes\server.yaml
 
 To delete this deployment. Get the deployment name first, then use that to remove it.
+
+```bash
 kubectl get deployments
 kubectl delete deployment deployment_name
+# or  
+kubectl delete --all deployments --namespace=default
+```
 
 This will probably fail because of missing args. It is in the file, but for some bug doesn't get loaded. Open minikube dashboard GUI in the web brower.
 
@@ -978,6 +987,9 @@ ls -lah /data/
 ./client client1
 index -p 4 -s hg38.fa
 
+# to scale this up  
+kubectl scale deployments/tasker-secure-worker --replicas=4
+
 # Check log of client pod to see how it partitioned the data. 
 # If we scale up the worker node to have multiple nodes, they'll pickup the other partitions to index
 
@@ -988,5 +1000,15 @@ ls
 mem -s SRR062634.filt.fastq -i index_wvmnb8kx
 
 ```
-We also can follow pod logs in real time
-kubectl logs --follow podName
+We also can follow pod logs in real time using `kubectl logs --follow podName`.
+
+The mem command faced the following error which caused the secure worker pods to crash and restart. [issue](https://github.com/intel/linux-sgx/issues/240), [issue 2](https://community.intel.com/t5/Intel-Software-Guard-Extensions/Enclave-runtime-exception-on-ERESUME/m-p/1329059#M4991)
+
+```bash
+Encoding the bloomfilter...
+BF size :  6418574576
+Sending a bf of size 802321823 to the encalve...
+[sig_handler sig_handler.cpp:93] signal handler is triggered
+[sig_handler sig_handler.cpp:149] NOT enclave signal
+Illegal instruction (core dumped)
+```
