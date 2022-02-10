@@ -27,6 +27,10 @@ spec:
         - name: gfs-volume
           hostPath:
             path: /mnt
+        - name: local
+          hostPath:
+            path: /home/mi3se/data
+            type: DirectoryOrCreate
       containers:
         - name: tasker
           image: cwidanage/tasker-graphene:0.02
@@ -39,10 +43,10 @@ spec:
             - name: ENV_ROOT_PATH
               value: "/data/"
           volumeMounts:
-            - name: gfs-volume
-              mountPath: /data
             - mountPath: /var/run/aesmd/aesm.socket
               name: aesmsocket
+            - name: local
+              mountPath: /data
           imagePullPolicy: Always
           securityContext:
             privileged: true

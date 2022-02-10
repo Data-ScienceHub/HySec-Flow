@@ -5,7 +5,7 @@ metadata:
   labels:
     app: tasker-secure-worker
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: tasker-secure-worker
@@ -29,7 +29,7 @@ spec:
             path: /mnt
         - name: local
           hostPath:
-            path: /data
+            path: /home/mi3se/data
             type: DirectoryOrCreate
       containers:
         - name: tasker
@@ -37,14 +37,12 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             [
-              "cd /sgx-tasks/ && git pull && cd /sgx-tasks/applications/genomeseq/dida-sgx/ && git pull origin tasker-integration && cd /sgx-tasks/build/ && make SGX_MODE=SIM && cd /sgx-tasks/build/applications/genomeseq/dida-sgx/sample/DIDA/ && ./didasgx tcp://tasker-server-worker:5050",
+              "cd /sgx-tasks/ && git pull && cd /sgx-tasks/applications/genomeseq/dida-sgx/ && git pull origin tasker-integration && cd /sgx-tasks/build/ && make && cd /sgx-tasks/build/applications/genomeseq/dida-sgx/sample/DIDA/ && ./didasgx tcp://tasker-server-worker:5050",
             ]
           env:
             - name: ENV_ROOT_PATH
               value: "/data/"
           volumeMounts:
-            - name: gfs-volume
-              mountPath: /gfs
             - name: aesmsocket
               mountPath: /var/run/aesmd/aesm.socket
             - name: local
@@ -56,6 +54,3 @@ spec:
             limits:
               cpu: 1
               memory: 6G
-            # requests:
-            #   cpu: 0.5
-            #   memory: 3G
