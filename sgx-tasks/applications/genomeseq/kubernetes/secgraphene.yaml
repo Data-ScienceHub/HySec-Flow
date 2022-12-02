@@ -47,7 +47,7 @@ spec:
               name: aesmsocket
             - name: local
               mountPath: /data
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
           resources:

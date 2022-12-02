@@ -53,4 +53,4 @@ spec:
           resources:
             limits:
               cpu: 1
-              memory: 6G
+              memory: 4G
